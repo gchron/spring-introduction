@@ -35,4 +35,29 @@ class CreditCardBillingServiceTest {
         Assertions.assertTrue(receipt.isSuccessful());
         Assertions.assertEquals(BigDecimal.valueOf(7.49), receipt.getAmount());
     }
+
+    @Test
+    public void shouldDeclineCharged() {
+        Order order = new Order();
+        OrderItem hotDog = new OrderItem("Coca-Cola", BigDecimal.valueOf(2.99));
+        OrderItem coffee = new OrderItem("Coffee", BigDecimal.valueOf(4.5));
+
+        order.addItem(hotDog);
+        order.addItem(coffee);
+
+        CreditCard card = new CreditCard(
+                "123445435", "Grzegorz", "Brzęczyszczykiewicz", LocalDate.of(2022, 01, 01));
+        CreditCardProcessor creditCardProcessor = Mockito.mock(CreditCardProcessor.class);
+        Mockito.when(creditCardProcessor.charge(
+                card, order.getAmount())).thenReturn(new ChargeResult(false, "unsuccessful"));
+
+        TransactionLog transactionLog = Mockito.mock(TransactionLog.class);
+
+        CreditCardBillingService creditCardBillingService = new CreditCardBillingService(creditCardProcessor, transactionLog);
+
+        Receipt receipt = creditCardBillingService.chargeOrder(order, card);
+
+        Assertions.assertFalse(receipt.isSuccessful());
+        Assertions.assertEquals("unsuccessful",receipt.getMessage());
+    }
 }
