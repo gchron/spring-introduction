@@ -2,23 +2,18 @@ package pl.dominisz.springintroduction.service;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import pl.dominisz.springintroduction.model.CreditCard;
-import pl.dominisz.springintroduction.model.Order;
-import pl.dominisz.springintroduction.model.OrderItem;
-import pl.dominisz.springintroduction.model.Receipt;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import pl.dominisz.springintroduction.model.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class CreditCardBillingServiceTest {
 
     @Test
     public void shouldSuccessfullyChargedCard() {
-        CreditCardBillingService creditCardBillingService = new CreditCardBillingService();
         Order order = new Order();
-
         OrderItem hotDog = new OrderItem("Coca-Cola", BigDecimal.valueOf(2.99));
         OrderItem coffee = new OrderItem("Coffee", BigDecimal.valueOf(4.5));
 
@@ -26,6 +21,14 @@ class CreditCardBillingServiceTest {
         order.addItem(coffee);
 
         CreditCard card = new CreditCard("123445435", "Grzegorz", "Brzęczyszczykiewicz", LocalDate.of(2022, 01, 01));
+
+        CreditCardProcessor creditCardProcessor = Mockito.mock(CreditCardProcessor.class);
+        Mockito.when(creditCardProcessor.charge(
+                card, order.getAmount())).thenReturn(new ChargeResult(true, "successful"));
+
+        TransactionLog transactionLog = Mockito.mock(TransactionLog.class);
+
+        CreditCardBillingService creditCardBillingService = new CreditCardBillingService(creditCardProcessor, transactionLog);
 
         Receipt receipt = creditCardBillingService.chargeOrder(order, card);
 

@@ -8,10 +8,16 @@ import pl.dominisz.springintroduction.model.Receipt;
 
 public class CreditCardBillingService implements BillingService {
 
+    private final CreditCardProcessor processor;
+    private final TransactionLog transactionLog;
+
+    public CreditCardBillingService(CreditCardProcessor creditCardProcessor, TransactionLog transactionLog) {
+        this.processor = creditCardProcessor;
+        this.transactionLog = transactionLog;
+    }
+
     @Override
     public Receipt chargeOrder(Order order, CreditCard creditCard) {
-        CreditCardProcessor processor = new PaypalCreditCardProcessor();
-        TransactionLog transactionLog = new DatabaseTransactionLog();
 
         try {
             ChargeResult result = processor.charge(creditCard, order.getAmount());

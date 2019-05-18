@@ -11,9 +11,12 @@ import java.time.LocalDate;
 
 public class Application {
 
+
     public static void main(String[] args) {
 
-        BillingService billingService = new CreditCardBillingService();
+        CreditCardProcessor creditCardProcessor = new PaypalCreditCardProcessor();
+        TransactionLog transactionLog = new DatabaseTransactionLog();
+        BillingService billingService = new CreditCardBillingService(creditCardProcessor, transactionLog);
 
         Order order = new Order();
         OrderItem hotDog = new OrderItem("Hot dog", BigDecimal.valueOf(3.59));
