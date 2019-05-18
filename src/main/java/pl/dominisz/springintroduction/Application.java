@@ -1,7 +1,9 @@
 package pl.dominisz.springintroduction;
 
-import pl.dominisz.springintroduction.service.BillingService;
-import pl.dominisz.springintroduction.service.CreditCardBillingService;
+import pl.dominisz.springintroduction.model.CreditCard;
+import pl.dominisz.springintroduction.model.Order;
+import pl.dominisz.springintroduction.model.Receipt;
+import pl.dominisz.springintroduction.service.*;
 
 public class Application {
 
@@ -9,10 +11,10 @@ public class Application {
 
         BillingService billingService = new CreditCardBillingService();
 
-        PizzaOrder pizzaOrder = new PizzaOrder();
+        Order order = new Order();
         CreditCard creditCard = new CreditCard();
 
-        Receipt receipt = billingService.chargeOrder(pizzaOrder, creditCard);
+        Receipt receipt = billingService.chargeOrder(order, creditCard);
 
         System.out.println(receipt);
     }
